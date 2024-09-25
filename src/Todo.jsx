@@ -1,5 +1,6 @@
-import React, { useSyncExternalStore } from 'react'
+import React from 'react'
 import { useState } from 'react';
+import './Todo.css'
 
 const Todo = () => {
 
@@ -7,11 +8,11 @@ const Todo = () => {
 
     const [inputValue,setInputValue] = useState('');
 
-    const [edittodo,setEditTodo] = useState(false);
-
+    const [editMode,setEditMode] = useState(false);
     const [editId,setEditId] = useState(null);
-
     const [editValue,setEditValue] = useState('');
+
+
 
     const addTodo = () =>{
         if(inputValue.trim() !== ""){
@@ -29,8 +30,8 @@ const Todo = () => {
         setTodos(updatedTodos)
     }
 
-    const editTodos = (id,text) =>{
-        setEditTodo(true);
+    const enterEditMode = (id,text) =>{
+        setEditMode(true);
         setEditId(id);
         setEditValue(text);
     }
@@ -41,26 +42,39 @@ const Todo = () => {
                 return {...todo,text:editValue}
             }
             return todo;
+
         })
-        setTodos(editTodos);
-        setEditTodo(false);
+        setTodos(updatedTodos);
+        setEditMode(false)
         setEditId(null)
         setEditValue('')
     }
+
+
+
 
 
   return (
     <div className='todo-container'>
       <h1>ToDo List</h1>
       <input type='text' value={inputValue} onChange={(e)=> setInputValue(e.target.value) }/>
-      <button onClick={addTodo}>Add</button>
+      {
+        editMode ? (
+            <div>
+                <input type='text' value={editValue} onChange={(e) => setEditValue(e.target.value)}/>
+                <button onClick={updateTodo}>Update</button>
+            </div>
+        ):(
+            <button onClick={addTodo}>Add</button>
+        )
+      }
       <ul>
         {
             todos.map((todo)=>(
                 <li key={todo.id}>
                     {todo.text}
                     <button onClick={()=> deleteTodo(todo.id)}>Delete</button>
-                    <button onClick={()=> editTodos(todo.id,todo.text)}>Update</button>
+                    <button onClick={()=> enterEditMode(todo.id,todo.text)}>Edit</button>
                 </li>
             ))
         }
